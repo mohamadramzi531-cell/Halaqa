@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#111C42"/>
+  <g transform="translate(256 256)" fill="none" stroke-linejoin="round">
+    <polygon points="0,-170 49.79,-120.21 120.21,-120.21 120.21,-49.79 170,0 120.21,49.79 120.21,120.21 49.79,120.21 0,170 -49.79,120.21 -120.21,120.21 -120.21,49.79 -170,0 -120.21,-49.79 -120.21,-120.21 -49.79,-120.21" stroke="#C9A13B" stroke-width="20"/>
+    <circle r="66" stroke="#E4C672" stroke-width="16"/>
+    <circle r="20" fill="#E4C672" stroke="none"/>
+  </g>
+</svg>

@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en" data-theme="lapis">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Halaqa: Quran classroom</title>
+  <meta name="description" content="A Quran classroom for teachers: Mushaf pages you can draw on, highlight and recite, with a notebook for every student.">
+  <meta name="theme-color" content="#0B1330">
+  <meta name="color-scheme" content="dark light">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Halaqa">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://api.alquran.cloud" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Instrument+Sans:wght@400..700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+<noscript><p class="noscript">Halaqa needs JavaScript to run. Please turn it on in your browser settings.</p></noscript>
+
+<div class="app" id="app" data-tool="pointer">
+
+  <!-- ============================================================ top bar -->
+  <header class="topbar">
+    <button class="brand" id="btnAbout" type="button" aria-label="About Halaqa">
+      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,3 19.81,6.81 25.19,6.81 25.19,12.19 29,16 25.19,19.81 25.19,25.19 19.81,25.19 16,29 12.19,25.19 6.81,25.19 6.81,19.81 3,16 6.81,12.19 6.81,6.81 12.19,6.81"/><circle cx="16" cy="16" r="4.6"/></svg>
+      <span class="brand__name">Halaqa</span>
+    </button>
+
+    <div class="nav">
+      <button class="surah-btn" id="btnSurah" type="button" aria-label="Choose a surah, juz or page">
+        <span class="surah-btn__text">
+          <span class="surah-btn__en" id="surahEn">Loading</span>
+          <span class="surah-btn__sub"><span id="juzLabel">Juz 1</span><span class="surah-btn__ar" id="surahAr" lang="ar" dir="rtl"></span></span>
+        </span>
+        <span class="surah-btn__chev" data-icon="chevDown"></span>
+      </button>
+      <div class="pager" role="group" aria-label="Pages">
+        <button class="icon-btn" id="btnNext" type="button" data-icon="chevLeft" aria-label="Next page" data-tip="Next page (←)"></button>
+        <button class="pager__no" id="btnPageNo" type="button" aria-label="Go to page">
+          <span class="pager__word">Page</span> <b id="pageNo">1</b><span class="pager__of"> of 604</span>
+        </button>
+        <button class="icon-btn" id="btnPrev" type="button" data-icon="chevRight" aria-label="Previous page" data-tip="Previous page (→)"></button>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button class="icon-btn hide-sm" id="btnPlay" type="button" data-icon="play" aria-label="Listen" data-tip="Listen (Space)"></button>
+      <button class="icon-btn hide-sm" id="btnSearch" type="button" data-icon="search" aria-label="Search the Quran" data-tip="Search (/)"></button>
+      <button class="icon-btn hide-sm" id="btnBookmark" type="button" data-icon="bookmark" aria-label="Bookmark this page" aria-pressed="false" data-tip="Bookmark (B)"></button>
+      <button class="student-chip" id="btnStudent" type="button" aria-label="Choose student">
+        <span class="avatar" id="studentAvatar" aria-hidden="true">📖</span>
+        <span class="student-chip__name" id="studentName">My Mushaf</span>
+      </button>
+      <button class="icon-btn hide-sm" id="btnPanel" type="button" data-icon="notebook" aria-label="Student notebook" aria-pressed="false" data-tip="Notebook (N)"></button>
+      <button class="icon-btn hide-sm" id="btnSettings" type="button" data-icon="sliders" aria-label="Settings" data-tip="Settings"></button>
+      <button class="icon-btn show-sm" id="btnMore" type="button" data-icon="more" aria-label="More" aria-haspopup="menu" aria-expanded="false"></button>
+    </div>
+
+    <div class="menu" id="moreMenu" role="menu" hidden>
+      <button type="button" role="menuitem" data-menu="play" data-icon="play">Listen</button>
+      <button type="button" role="menuitem" data-menu="search" data-icon="search">Search the Quran</button>
+      <button type="button" role="menuitem" data-menu="bookmark" data-icon="bookmarkPlus">Bookmark this page</button>
+      <button type="button" role="menuitem" data-menu="panel" data-icon="notebook">Student notebook</button>
+      <button type="button" role="menuitem" data-menu="translation" data-icon="translate">Translation</button>
+      <button type="button" role="menuitem" data-menu="settings" data-icon="sliders">Settings</button>
+      <button type="button" role="menuitem" data-menu="help" data-icon="keyboard">Help and shortcuts</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+
+    <!-- ============================================================ tool rail -->
+    <nav class="toolbar" id="toolbar" aria-label="Tools">
+      <div class="toolbar__group" role="toolbar" aria-label="Teaching tools">
+        <button class="tbtn" type="button" data-tool="pointer" data-icon="pointer" aria-label="Point and select" aria-pressed="true" data-tip="Point and select (V)"></button>
+        <button class="tbtn" type="button" data-tool="laser" data-icon="laser" aria-label="Laser pointer" aria-pressed="false" data-tip="Laser pointer (L)"></button>
+        <button class="tbtn" type="button" data-tool="pen" data-icon="pen" aria-label="Pen" aria-pressed="false" data-tip="Pen (P)"><span class="tbtn__pip" id="pipPen"></span></button>
+        <button class="tbtn" type="button" data-tool="highlighter" data-icon="highlighter" aria-label="Highlighter" aria-pressed="false" data-tip="Highlighter (H)"><span class="tbtn__pip" id="pipHl"></span></button>
+        <button class="tbtn" type="button" data-tool="eraser" data-icon="eraser" aria-label="Eraser" aria-pressed="false" data-tip="Eraser (E)"></button>
+        <button class="tbtn" type="button" data-tool="mistake" data-icon="mistake" aria-label="Mark mistakes" aria-pressed="false" data-tip="Mark mistakes (M)"><span class="tbtn__pip" id="pipMistake"></span></button>
+      </div>
+      <hr class="tsep">
+      <div class="toolbar__group">
+        <button class="tbtn" type="button" id="btnUndo" data-act="undo" data-icon="undo" aria-label="Undo" data-tip="Undo (Ctrl+Z)" disabled></button>
+        <button class="tbtn" type="button" id="btnRedo" data-act="redo" data-icon="redo" aria-label="Redo" data-tip="Redo (Ctrl+Y)" disabled></button>
+        <button class="tbtn" type="button" id="btnHide" data-act="hide" data-icon="eyeOff" aria-label="Hide text for a memory test" aria-pressed="false" data-tip="Hide text (T)"></button>
+        <button class="tbtn" type="button" id="btnClear" data-act="clear" data-icon="trash" aria-label="Clear drawings on this page" data-tip="Clear drawings"></button>
+      </div>
+      <hr class="tsep">
+      <div class="toolbar__group">
+        <button class="tbtn" type="button" data-act="zoom-in" data-icon="zoomIn" aria-label="Zoom in" data-tip="Zoom in (+)"></button>
+        <button class="tbtn tbtn--text" type="button" id="zoomLabel" data-act="zoom-fit" aria-label="Fit page to screen" data-tip="Fit to screen (0)">100%</button>
+        <button class="tbtn" type="button" data-act="zoom-out" data-icon="zoomOut" aria-label="Zoom out" data-tip="Zoom out (−)"></button>
+        <button class="tbtn" type="button" id="btnFocus" data-act="focus" data-icon="expand" aria-label="Full screen" aria-pressed="false" data-tip="Full screen (F)"></button>
+      </div>
+    </nav>
+
+    <!-- ============================================================ stage -->
+    <div class="stage-wrap">
+      <main class="stage" id="stage" aria-label="Mushaf page">
+        <div class="sizer" id="sizer">
+          <article class="page" id="page" lang="ar" dir="rtl">
+            <canvas class="ink ink--hl" id="cvHl" aria-hidden="true"></canvas>
+            <div class="frame" aria-hidden="true">
+              <svg class="corner corner--tr" viewBox="0 0 32 32"><polygon points="16,3 19.81,6.81 25.19,6.81 25.19,12.19 29,16 25.19,19.81 25.19,25.19 19.81,25.19 16,29 12.19,25.19 6.81,25.19 6.81,19.81 3,16 6.81,12.19 6.81,6.81 12.19,6.81"/></svg>
+              <svg class="corner corner--tl" viewBox="0 0 32 32"><polygon points="16,3 19.81,6.81 25.19,6.81 25.19,12.19 29,16 25.19,19.81 25.19,25.19 19.81,25.19 16,29 12.19,25.19 6.81,25.19 6.81,19.81 3,16 6.81,12.19 6.81,6.81 12.19,6.81"/></svg>
+              <svg class="corner corner--br" viewBox="0 0 32 32"><polygon points="16,3 19.81,6.81 25.19,6.81 25.19,12.19 29,16 25.19,19.81 25.19,25.19 19.81,25.19 16,29 12.19,25.19 6.81,25.19 6.81,19.81 3,16 6.81,12.19 6.81,6.81 12.19,6.81"/></svg>
+              <svg class="corner corner--bl" viewBox="0 0 32 32"><polygon points="16,3 19.81,6.81 25.19,6.81 25.19,12.19 29,16 25.19,19.81 25.19,25.19 19.81,25.19 16,29 12.19,25.19 6.81,25.19 6.81,19.81 3,16 6.81,12.19 6.81,6.81 12.19,6.81"/></svg>
+            </div>
+            <div class="page-body" id="pageBody"></div>
+            <canvas class="ink ink--pen" id="cvPen" aria-hidden="true"></canvas>
+            <div class="ink-input" id="inkInput"></div>
+          </article>
+        </div>
+      </main>
+
+      <div class="tool-options" id="toolOptions" hidden></div>
+
+      <button class="turn turn--next" id="turnNext" type="button" data-icon="chevLeft" aria-label="Next page"></button>
+      <button class="turn turn--prev" id="turnPrev" type="button" data-icon="chevRight" aria-label="Previous page"></button>
+
+      <div class="page-state" id="pageState" hidden>
+        <div class="page-state__box">
+          <svg class="page-state__star" viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,3 19.81,6.81 25.19,6.81 25.19,12.19 29,16 25.19,19.81 25.19,25.19 19.81,25.19 16,29 12.19,25.19 6.81,25.19 6.81,19.81 3,16 6.81,12.19 6.81,6.81 12.19,6.81"/></svg>
+          <p class="page-state__msg" id="pageStateMsg">Opening the mushaf…</p>
+          <button class="btn btn--gold" id="pageStateRetry" type="button" hidden>Try again</button>
+        </div>
+      </div>
+
+      <div class="dock">
+        <div class="player" id="player" hidden>
+          <div class="player__main">
+            <button class="dock-btn" id="plPrev" type="button" data-icon="prev" aria-label="Previous ayah"></button>
+            <button class="dock-btn dock-btn--big" id="plToggle" type="button" data-icon="pause" aria-label="Pause"></button>
+            <button class="dock-btn" id="plNext" type="button" data-icon="next" aria-label="Next ayah"></button>
+            <div class="player__label">
+              <span class="player__title" id="plLabel">Ready</span>
+              <span class="player__sub" id="plSub"></span>
+            </div>
+          </div>
+          <div class="player__opts">
+            <label class="mini-select" title="How many times each ayah is recited">
+              <span data-icon="repeat"></span>
+              <select id="plRepeat" aria-label="Repeat each ayah">
+                <option value="1">Once</option><option value="2">2×</option><option value="3">3×</option><option value="5">5×</option><option value="7">7×</option><option value="10">10×</option>
+              </select>
+            </label>
+            <button class="chip" id="plLoop" type="button" aria-pressed="false" title="Start the selection again when it ends">Loop</button>
+            <button class="chip" id="plKeep" type="button" aria-pressed="true" title="Carry on with the next ayahs">Keep going</button>
+            <label class="mini-select" title="Speed">
+              <select id="plRate" aria-label="Speed">
+                <option value="0.75">0.75×</option><option value="1">1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option>
+              </select>
+            </label>
+            <button class="dock-btn" id="plStop" type="button" data-icon="close" aria-label="Stop and close player"></button>
+          </div>
+        </div>
+
+        <div class="selbar" id="selbar" hidden>
+          <span class="selbar__label" id="selLabel"></span>
+          <button class="dock-btn" type="button" data-act="extend" data-icon="plus" aria-label="Select a range: tap this, then tap the last ayah" aria-pressed="false" data-tip="Select a range"></button>
+          <button class="dock-btn" type="button" data-act="play" data-icon="play" aria-label="Recite selected ayahs" data-tip="Recite"></button>
+          <span class="selbar__sep"></span>
+          <div class="selbar__hl" role="group" aria-label="Highlight colour">
+            <button class="hl-dot" type="button" data-hl="y" aria-pressed="false"></button>
+            <button class="hl-dot" type="button" data-hl="g" aria-pressed="false"></button>
+            <button class="hl-dot" type="button" data-hl="b" aria-pressed="false"></button>
+            <button class="hl-dot" type="button" data-hl="r" aria-pressed="false"></button>
+            <button class="hl-dot" type="button" data-hl="p" aria-pressed="false"></button>
+            <button class="hl-dot hl-dot--none" type="button" data-hl="" aria-label="Remove highlight" data-tip="Remove highlight" data-icon="close"></button>
+          </div>
+          <span class="selbar__sep"></span>
+          <button class="dock-btn" type="button" data-act="bookmark" data-icon="bookmarkPlus" aria-label="Bookmark" data-tip="Bookmark"></button>
+          <button class="dock-btn" type="button" data-act="translate" data-icon="translate" aria-label="Translation" data-tip="Translation"></button>
+          <button class="dock-btn" type="button" data-act="lesson" data-icon="list" aria-label="Add to lesson log" data-tip="Add to lesson log"></button>
+          <button class="dock-btn" type="button" data-act="copy" data-icon="copy" aria-label="Copy text" data-tip="Copy"></button>
+          <button class="dock-btn" type="button" data-act="share" data-icon="share" aria-label="Share a link" data-tip="Share link"></button>
+          <button class="dock-btn" type="button" data-act="deselect" data-icon="close" aria-label="Clear selection" data-tip="Done (Esc)"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ notebook panel -->
+    <aside class="panel" id="panel" hidden aria-label="Student notebook">
+      <div class="panel__head">
+        <div class="tabs" role="tablist">
+          <button class="tab" id="tabStudent" type="button" role="tab" aria-selected="true" data-tab="student">Notebook</button>
+          <button class="tab" id="tabTranslation" type="button" role="tab" aria-selected="false" data-tab="translation">Translation</button>
+        </div>
+        <button class="icon-btn" id="panelClose" type="button" data-icon="close" aria-label="Close notebook"></button>
+      </div>
+      <div class="panel__body" id="panelBody"></div>
+    </aside>
+  </div>
+
+  <canvas class="fx" id="fx" aria-hidden="true"></canvas>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+</div>
+
+<!-- ============================================================ dialogs -->
+
+<dialog id="dlgNav" aria-labelledby="navTitle">
+  <div class="dlg dlg--tall">
+    <div class="dlg__head">
+      <h2 class="dlg__title" id="navTitle">Open the mushaf</h2>
+      <button class="icon-btn" type="button" data-close data-icon="close" aria-label="Close"></button>
+    </div>
+    <div class="tabs tabs--dlg" role="tablist" id="navTabs">
+      <button class="tab" type="button" role="tab" data-nav="surah" aria-selected="true">Surah</button>
+      <button class="tab" type="button" role="tab" data-nav="juz" aria-selected="false">Juz</button>
+      <button class="tab" type="button" role="tab" data-nav="page" aria-selected="false">Page</button>
+    </div>
+    <div class="dlg__body" data-navpane="surah">
+      <input class="field" id="surahFilter" type="text" enterkeyhint="go" placeholder="Search by name or number" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Filter surahs">
+      <ol class="surah-list" id="surahList"></ol>
+    </div>
+    <div class="dlg__body" data-navpane="juz" hidden>
+      <div class="juz-pick" id="juzGrid"></div>
+    </div>
+    <div class="dlg__body" data-navpane="page" hidden>
+      <form class="page-pick" id="pageForm">
+        <label class="field-label" for="pageInput">Page number (1 to 604)</label>
+        <div class="page-pick__row">
+          <input class="field field--big" id="pageInput" type="number" min="1" max="604" inputmode="numeric" required>
+          <button class="btn btn--primary" type="submit">Open page</button>
+        </div>
+        <input class="range" id="pageRange" type="range" min="1" max="604" aria-label="Page">
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgSearch" aria-labelledby="searchTitle">
+  <div class="dlg dlg--tall">
+    <div class="dlg__head">
+      <h2 class="dlg__title" id="searchTitle">Search the Quran</h2>
+      <button class="icon-btn" type="button" data-close data-icon="close" aria-label="Close"></button>
+    </div>
+    <div class="dlg__body">
+      <input class="field" id="searchInput" type="text" enterkeyhint="search" placeholder="Arabic word, English word, or 2:255" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search">
+      <p class="hint" id="searchHint">Type at least two letters. Arabic works with or without vowel marks.</p>
+      <ol class="results" id="searchResults"></ol>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgStudents" aria-labelledby="studentsTitle">
+  <div class="dlg">
+    <div class="dlg__head">
+      <h2 class="dlg__title" id="studentsTitle">Students</h2>
+      <button class="icon-btn" type="button" data-close data-icon="close" aria-label="Close"></button>
+    </div>
+    <div class="dlg__body">
+      <p class="hint">Each student has their own copy of the mushaf: drawings, highlights, bookmarks, mistakes and notes are kept separately.</p>
+      <ul class="student-list" id="studentList"></ul>
+    </div>
+    <div class="dlg__foot">
+      <button class="btn btn--primary" id="btnAddStudent" type="button" data-icon="plus">Add student</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgStudentForm" aria-labelledby="sfTitle">
+  <form class="dlg" id="studentForm" method="dialog">
+    <div class="dlg__head">
+      <h2 class="dlg__title" id="sfTitle">Add student</h2>
+      <button class="icon-btn" type="button" data-close data-icon="close" aria-label="Close"></button>
+    </div>
+    <div class="dlg__body">
+      <label class="field-label" for="sfName">Name</label>
+      <input class="field" id="sfName" type="text" maxlength="40" autocomplete="off" required placeholder="For example, Yusuf">
+      <span class="field-label">Picture</span>
+      <div class="pick-grid" id="sfAvatars" role="radiogroup" aria-label="Picture"></div>
+      <span class="field-label">Colour</span>
+      <div class="pick-row" id="sfColors" role="radiogroup" aria-label="Colour"></div>
+    </div>
+    <div class="dlg__foot">
+      <button class="btn" type="button" data-close>Cancel</button>
+      <button class="btn btn--primary" id="sfSave" type="submit" value="save">Save student</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgBookmark" aria-labelledby="bmTitle">
+  <form class="dlg" id="bookmarkForm" method="dialog">
+    <div class="dlg__head">
+      <h2 class="dlg__title" id="bmTitle">Save a bookmark</h2>
+      <button class="icon-btn" type="button" data-close data-icon="close" aria-label="Close"></button>
+    </div>
+    <div class="dlg__body">
+      <p class="hint" id="bmWhere"></p>
+      <label class="field-label" for="bmLabel">Name</label>
+      <input class="field" id="bmLabel" type="text" maxlength="60" autocomplete="off" required>
+      <span class="field-label">Colour</span>
+      <div class="pick-row" id="bmColors" role="radiogroup" aria-label="Bookmark colour"></div>
+      <div id="bmExisting"></div>
+    </div>
+    <div class="dlg__foot">
+      <button class="btn" type="button" data-close>Cancel</button>
+      <button class="btn btn--primary" type="submit" value="save">Save bookmark</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgLesson" aria-labelledby="lsTitle">
+  <form class="dlg" id="lessonForm" method="dialog">
+    <div class="dlg__head">
+      <h2 class="dlg__title" id="lsTitle">Add to lesson log</h2>
+      <button class="icon-btn" type="button" data-close data-icon="close" aria-label="Close"></button>
+    </div>
+    <div class="dlg__body">
+      <div class="two-col">
+        <div>
+          <label class="field-label" for="lsDate">Date</label>
+          <input class="field" id="lsDate" type="date" required>
+        </div>
+        <div>
+          <span class="field-label">Kind of lesson</span>
+          <div class="seg" role="radiogroup" aria-label="Kind of lesson">
+            <label><input type="radio" name="lsType" value="new" checked><span>New</span></label>
+            <label><input type="radio" name="lsType" value="revision"><span>Revision</span></label>
+            <label><input type="radio" name="lsType" value="test"><span>Test</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div>
+          <label class="field-label" for="lsFrom">From (surah:ayah)</label>
+          <input class="field" id="lsFrom" type="text" inputmode="numeric" pattern="\s*\d{1,3}\s*:\s*\d{1,3}\s*" placeholder="2:1" required>
+        </div>
+        <div>
+          <label class="field-label" for="lsTo">To (surah:ayah)</label>
+          <input class="field" id="lsTo" type="text" inputmode="numeric" pattern="\s*\d{1,3}\s*:\s*\d{1,3}\s*" placeholder="2:5" required>
+        </div>
+      </div>
+      <span class="field-label">How did it go?</span>
+      <div class="stars" id="lsStars" role="radiogroup" aria-label="Grade"></div>
+      <label class="field-label" for="lsNote">Note</label>
+      <textarea class="field" id="lsNote" rows="3" maxlength="600" placeholder="What to practise next time"></textarea>
+    </div>
+    <div class="dlg__foot">
+      <button class="btn" type="button" data-close>Cancel</button>
+      <button class="btn btn--primary" type="submit" value="save">Save lesson</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgSettings" aria-labelledby="setTitle">
+  <div class="dlg dlg--tall">
+    <div class="dlg__head">
+      <h2 class="dlg__title" id="setTitle">Settings</h2>
+      <button class="icon-btn" type="button" data-close data-icon="close" aria-label="Close"></button>
+    </div>
+    <div class="dlg__body settings">
+      <section>
+        <h3>Look</h3>
+        <span class="field-label">Theme</span>
+        <div class="seg seg--wide" role="radiogroup" aria-label="Theme">
+          <label><input type="radio" name="theme" value="lapis"><span>Lapis</span></label>
+          <label><input type="radio" name="theme" value="day"><span>Daylight</span></label>
+          <label><input type="radio" name="theme" value="night"><span>Night</span></label>
+        </div>
+        <span class="field-label">Cursor</span>
+        <div class="seg seg--wide" role="radiogroup" aria-label="Cursor">
+          <label><input type="radio" name="cursor" value="noor"><span>Gold star</span></label>
+          <label><input type="radio" name="cursor" value="ring"><span>Ring</span></label>
+          <label><input type="radio" name="cursor" value="beacon"><span>Large, for screen sharing</span></label>
+          <label><input type="radio" name="cursor" value="system"><span>Normal</span></label>
+        </div>
+      </section>
+      <section>
+        <h3>Recitation</h3>
+        <label class="field-label" for="setReciter">Reciter</label>
+        <select class="field" id="setReciter"></select>
+        <div class="two-col">
+          <div>
+            <label class="field-label" for="setRepeat">Recite each ayah</label>
+            <select class="field" id="setRepeat">
+              <option value="1">Once</option><option value="2">2 times</option><option value="3">3 times</option><option value="5">5 times</option><option value="7">7 times</option><option value="10">10 times</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="setRate">Speed</label>
+            <select class="field" id="setRate">
+              <option value="0.75">Slower (0.75×)</option><option value="1">Normal</option><option value="1.25">Faster (1.25×)</option><option value="1.5">Fastest (1.5×)</option>
+            </select>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="setFollow"><span>Turn pages to follow the reciter</span></label>
+      </section>
+      <section>
+        <h3>Translation</h3>
+        <label class="field-label" for="setTranslation">Shown in the Translation tab</label>
+        <select class="field" id="setTranslation"></select>
+      </section>
+      <section>
+        <h3>Drawing</h3>
+        <label class="check"><input type="checkbox" id="setFinger"><span>Draw with a finger. Turn this off to draw only with a stylus and scroll with your finger.</span></label>
+        <p class="hint">Use two fingers to scroll or zoom while a drawing tool is selected.</p>
+      </section>
+      <section>
+        <h3>Highlight colour names</h3>
+        <p class="hint">Rename the colours to match how you teach. The names show in the notebook.</p>
+        <div class="hl-names" id="hlNames"></div>
+      </section>
+      <section>
+        <h3>Your data</h3>
+        <p class="hint">Everything is saved on this device only. Download a backup to keep it safe or to move it to another device.</p>
+        <div class="btn-row">
+          <button class="btn" id="btnExport" type="button" data-icon="download">Download backup</button>
+          <button class="btn" id="btnImport" type="button" data-icon="upload">Restore backup</button>
+        </div>
+        <button class="btn btn--quiet-danger" id="btnErase" type="button" data-icon="trash">Erase everything on this device</button>
+      </section>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgHelp" aria-labelledby="helpTitle">
+  <div class="dlg dlg--tall">
+    <div class="dlg__head">
+      <h2 class="dlg__title" id="helpTitle">Help and shortcuts</h2>
+      <button class="icon-btn" type="button" data-close data-icon="close" aria-label="Close"></button>
+    </div>
+    <div class="dlg__body help">
+      <ul class="tips">
+        <li><span data-icon="pointer"></span><p><b>Tap an ayah</b> to recite it, highlight it, bookmark it, read its translation or share a link. Shift-click a second ayah to select a range.</p></li>
+        <li><span data-icon="mistake"></span><p><b>Mark mistakes</b> while your student recites: tap the word. It goes into their practice list in the notebook.</p></li>
+        <li><span data-icon="eyeOff"></span><p><b>Hide text</b> to test memory. Tap a word to reveal it, or press N for the next word. Press T again to show only the first word of each ayah.</p></li>
+        <li><span data-icon="highlighter"></span><p><b>Highlighter</b> ink sits under the letters so the text stays sharp. Hold Shift for a straight line.</p></li>
+        <li><span data-icon="users"></span><p><b>Every student</b> gets their own drawings, highlights, bookmarks and notes. Switch from the name at the top.</p></li>
+      </ul>
+      <h3>Keyboard</h3>
+      <table class="keys">
+        <tbody>
+          <tr><td><kbd>V</kbd></td><td>Point and select</td><td><kbd>L</kbd></td><td>Laser pointer</td></tr>
+          <tr><td><kbd>P</kbd></td><td>Pen</td><td><kbd>H</kbd></td><td>Highlighter</td></tr>
+          <tr><td><kbd>E</kbd></td><td>Eraser</td><td><kbd>M</kbd></td><td>Mark mistakes</td></tr>
+          <tr><td><kbd>←</kbd></td><td>Next page</td><td><kbd>→</kbd></td><td>Previous page</td></tr>
+          <tr><td><kbd>Space</kbd></td><td>Recite or pause</td><td><kbd>B</kbd></td><td>Bookmark</td></tr>
+          <tr><td><kbd>T</kbd></td><td>Hide text</td><td><kbd>N</kbd></td><td>Next hidden word, or the notebook</td></tr>
+          <tr><td><kbd>1</kbd>–<kbd>5</kbd></td><td>Highlight selection</td><td><kbd>0</kbd></td><td>Fit page</td></tr>
+          <tr><td><kbd>+</kbd> <kbd>−</kbd></td><td>Zoom</td><td><kbd>F</kbd></td><td>Full screen</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td><td><kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Redo</td></tr>
+          <tr><td><kbd>/</kbd></td><td>Search</td><td><kbd>G</kbd></td><td>Go to surah or page</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>Clear selection</td><td><kbd>?</kbd></td><td>This help</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgAbout" aria-labelledby="aboutTitle">
+  <div class="dlg">
+    <div class="dlg__head">
+      <h2 class="dlg__title" id="aboutTitle">Halaqa</h2>
+      <button class="icon-btn" type="button" data-close data-icon="close" aria-label="Close"></button>
+    </div>
+    <div class="dlg__body about">
+      <p>A Quran classroom for teachers. Open any of the 604 pages of the Madani mushaf, point, draw and highlight while you teach, and keep a notebook for every student.</p>
+      <h3>Sources</h3>
+      <ul>
+        <li>Quran text: <a href="https://tanzil.net" target="_blank" rel="noopener">Tanzil Project</a> (Uthmani script), shown unchanged.</li>
+        <li>Text, translations and search: <a href="https://alquran.cloud" target="_blank" rel="noopener">AlQuran Cloud API</a>.</li>
+        <li>Recitations: <a href="https://alquran.cloud/cdn" target="_blank" rel="noopener">Islamic Network CDN</a>.</li>
+        <li>Fonts: Amiri and Amiri Quran by Khaled Hosny, Instrument Sans (SIL Open Font License).</li>
+      </ul>
+      <p class="hint">Your students' data never leaves this device unless you download a backup.</p>
+      <p class="hint" id="aboutVersion"></p>
+    </div>
+    <div class="dlg__foot">
+      <button class="btn" type="button" id="btnShowHelp" data-icon="keyboard">Help and shortcuts</button>
+      <button class="btn btn--primary" type="button" data-close>Close</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgWelcome" aria-labelledby="welcomeTitle">
+  <div class="dlg">
+    <div class="dlg__head dlg__head--hero">
+      <svg class="welcome-star" viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,3 19.81,6.81 25.19,6.81 25.19,12.19 29,16 25.19,19.81 25.19,25.19 19.81,25.19 16,29 12.19,25.19 6.81,25.19 6.81,19.81 3,16 6.81,12.19 6.81,6.81 12.19,6.81"/><circle cx="16" cy="16" r="4.6"/></svg>
+      <h2 class="dlg__title" id="welcomeTitle">Welcome to your halaqa</h2>
+    </div>
+    <div class="dlg__body">
+      <ul class="tips">
+        <li><span data-icon="users"></span><p><b>Add your students.</b> Each one gets their own copy of the mushaf, with separate drawings, highlights, bookmarks and notes.</p></li>
+        <li><span data-icon="pen"></span><p><b>Pick a tool on the left</b> (at the bottom on a phone): pen, highlighter, eraser, laser pointer and mistake marker.</p></li>
+        <li><span data-icon="pointer"></span><p><b>Tap an ayah</b> to recite it, highlight it or bookmark it.</p></li>
+        <li><span data-icon="download"></span><p><b>Your work saves by itself</b> on this device. Download a backup from Settings now and then.</p></li>
+      </ul>
+    </div>
+    <div class="dlg__foot">
+      <button class="btn" type="button" id="welcomeStudents" data-icon="plus">Add a student</button>
+      <button class="btn btn--primary" type="button" data-close>Start teaching</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgConfirm" aria-labelledby="confirmTitle">
+  <form class="dlg dlg--small" method="dialog">
+    <div class="dlg__body">
+      <h2 class="dlg__title" id="confirmTitle" data-title></h2>
+      <p data-message></p>
+    </div>
+    <div class="dlg__foot">
+      <button class="btn" value="cancel" data-cancel>Cancel</button>
+      <button class="btn btn--primary" value="ok" data-ok>OK</button>
+    </div>
+  </form>
+</dialog>
+
+</body>
+</html>
